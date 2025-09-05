@@ -24,10 +24,10 @@ Rails.application.routes.draw do
   namespace :api do
     get :subjects, to: "subjects#index"
     get :students, to: "students#index"
+    get :students_with_attendance, to: "students#with_attendance"
     get :attendances, to: "attendances#index"
     get :existing_attendance, to: "attendances#existing_attendance"
     get :'attendance/summary', to: 'api#attendance_summary'
-    get :'attendance/student/:student_id', to: 'api#student_attendance_details'
   end
 
   resources :attendances, only: [] do

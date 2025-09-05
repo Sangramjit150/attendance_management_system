@@ -151,15 +151,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Fetch student attendance data
   function fetchStudentAttendance(departmentId, semesterId, subjectId) {
-    fetch(`/api/student_attendance?department_id=${departmentId}&semester_id=${semesterId}&subject_id=${subjectId}`)
+    fetch(`/api/students_with_attendance?department_id=${departmentId}&semester_id=${semesterId}&subject_id=${subjectId}`)
       .then(response => response.json())
-      .then(data => {
+      .then(students => {
         studentsList.innerHTML = '';
         resetSummary();
 
-        if (data.students && data.students.length > 0) {
-          renderStudentAttendance(data.students);
-          updateSummary(data.students);
+        if (students.length > 0) {
+          renderStudentAttendance(students);
+          updateSummary(students);
         }
       })
       .catch(error => {
@@ -171,9 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Render student attendance data
   function renderStudentAttendance(students) {
     students.forEach(student => {
-      const percentage = student.total_classes > 0 ?
-        Math.round((student.present_count / student.total_classes) * 100) : 0;
-
+      const percentage = student.percentage;
       const status = getAttendanceStatus(percentage);
       const statusClass = getStatusClass(percentage);
 
@@ -183,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <td>${student.name}</td>
         <td>${student.total_classes}</td>
         <td>${student.present_count}</td>
-        <td>${student.absent_count}</td>
+        <td>${student.total_classes - student.present_count}</td>
         <td>
           <div class="d-flex align-items-center">
             <div class="progress flex-grow-1 me-2" style="height: 20px;">
@@ -212,9 +210,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let criticalCount = 0;
 
     students.forEach(student => {
-      const percentage = student.total_classes > 0 ?
-        Math.round((student.present_count / student.total_classes) * 100) : 0;
-
+      const percentage = student.percentage;
       totalPercentage += percentage;
 
       if (percentage >= 75) {
